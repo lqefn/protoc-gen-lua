@@ -29,7 +29,7 @@ function _VarintSize(value)
     if value <= 0x3fff then return 2 end
     if value <= 0x1fffff then return 3 end
     if value <= 0xfffffff then return 4 end
-    return 5 
+    return 5
 end
 
 function _SignedVarintSize(value)
@@ -129,16 +129,16 @@ Int64Sizer = Int32Sizer
 EnumSizer = Int32Sizer
 
 UInt32Sizer = _SimpleSizer(_VarintSize)
-UInt64Sizer = UInt32Sizer 
+UInt64Sizer = UInt32Sizer
 
 SInt32Sizer = _ModifiedSizer(_SignedVarintSize, wire_format.ZigZagEncode)
 SInt64Sizer = SInt32Sizer
 
-Fixed32Sizer = _FixedSizer(4) 
+Fixed32Sizer = _FixedSizer(4)
 SFixed32Sizer = Fixed32Sizer
 FloatSizer = Fixed32Sizer
 
-Fixed64Sizer = _FixedSizer(8) 
+Fixed64Sizer = _FixedSizer(8)
 SFixed64Sizer = Fixed64Sizer
 DoubleSizer = Fixed64Sizer
 
@@ -241,7 +241,7 @@ function _SimpleEncoder(wire_type, encode_value, compute_value_size)
                     size = size + compute_value_size(element)
                 end
                 EncodeVarint(write, size)
-                for element in value do
+                for _, element in ipairs(value) do
                     encode_value(write, element)
                 end
             end

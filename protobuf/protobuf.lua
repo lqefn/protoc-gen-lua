@@ -285,7 +285,7 @@ local function _DefaultValueConstructorForField(field)
     if field.cpp_type == FieldDescriptor.CPPTYPE_MESSAGE then
         local message_type = field.message_type
         return function (message)
-            result = message_type._concrete_class()
+            result = (message_type._concrete_class and message_type._concrete_class()) or message_type()
             result._SetListener(message._listener_for_children)
             return result
         end
@@ -360,7 +360,7 @@ local function _AddPropertiesForNonRepeatedCompositeField(field, message_meta)
     message_meta._getter[property_name] = function(self)
         local field_value = self._fields[field]
         if field_value == nil then
-            field_value = message_type._concrete_class()
+            field_value = (message_type._concrete_class and message_type._concrete_class()) or message_type()
             field_value:_SetListener(self._listener_for_children)
             
             self._fields[field] = field_value
@@ -842,28 +842,28 @@ end
 local function property_getter(message_meta)
     local getter = message_meta._getter
     local member = message_meta._member
-	
+    
     return function (self, property)
-		local g = getter[property]
-		if g then
-		    return g(self)
-		else
-		    return member[property]
-		end
-	end
+        local g = getter[property]
+        if g then
+            return g(self)
+        else
+            return member[property]
+        end
+    end
 end
 
 local function property_setter(message_meta)
-	local setter = message_meta._setter
+    local setter = message_meta._setter
 
-	return function (self, property, value)
-		local s = setter[property]
-		if s then
-			s(self, value)
-		else
-			error(property .. " not found")
-		end
-	end
+    return function (self, property, value)
+        local s = setter[property]
+        if s then
+            s(self, value)
+        else
+            error(property .. " not found")
+        end
+    end
 end
 
 function _AddClassAttributesForNestedExtensions(descriptor, message_meta)
@@ -919,4 +919,3 @@ local function Message(descriptor)
 end
 
 _M.Message = Message
-
